@@ -6,10 +6,11 @@ public class Enemy : MonoBehaviour
 {
     public float speed = 1f;
     private Transform target;
+    public Material objectMaterial;
     private void Awake()
     {
         // Position the cube at the origin.
-        transform.position = new Vector3(23.0f, 1.0f, 7.0f);
+        transform.position = new Vector3(23.0f, 0.0f, 7.0f);
         // Create and position the cylinder. Reduce the size.
         var cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         cylinder.transform.localScale = new Vector3(0.15f, 1.0f, 0.15f);
@@ -38,8 +39,25 @@ public class Enemy : MonoBehaviour
         Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
         transform.rotation = rotation;
     }
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        Destroy(collision.gameObject);
+        if (other.CompareTag("Red") && CompareTag("Red") || other.CompareTag("Green") && CompareTag("Green") || other.CompareTag("Blue") && CompareTag("Blue"))
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(other.gameObject);
+        }
+
+
+    }
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+        }
     }
 }

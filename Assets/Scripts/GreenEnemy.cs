@@ -39,19 +39,25 @@ public class GreenEnemy : MonoBehaviour
         Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
         transform.rotation = rotation;
     }
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        // Check if the collided object has a Renderer component.
-        Renderer otherRenderer = collision.gameObject.GetComponent<Renderer>();
-
-        if (otherRenderer != null)
+        if (other.CompareTag("Red") && CompareTag("Red") || other.CompareTag("Green") && CompareTag("Green") || other.CompareTag("Blue") && CompareTag("Blue"))
         {
-            // Check if the material of the collided object matches the assigned material.
-            if (otherRenderer.material == objectMaterial)
-            {
-                // Destroy the collided object.
-                Destroy(collision.gameObject);
-            }
+            Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(other.gameObject);
+        }
+
+
+    }
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
         }
     }
 }
