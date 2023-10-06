@@ -1,56 +1,56 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     public float speed = 1f;
     private Transform target;
-    public Material objectMaterial;
-    private void Awake()
+
+    public List<GameObject> enemyColor;
+    public GameObject enemy;
+    public float enemySpeed;
+    public Transform targetPlayer;
+    public GameObject enemyPlayer;
+    private void Start()
     {
-        // Position the cube at the origin.
-        transform.position = new Vector3(23.0f, 0.0f, 7.0f);
-        // Create and position the cylinder. Reduce the size.
-        var cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        cylinder.transform.localScale = new Vector3(0.15f, 1.0f, 0.15f);
-        // Grab cylinder values and place on the target.
-        target = cylinder.transform;
-        target.transform.position = new Vector3(0.0f, 1.0f, 0.0f);
-        // Create and position the floor.
-        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        floor.transform.position = new Vector3(0.0f, -1.0f, 0.0f);
+        targetPlayer = GameObject.FindGameObjectWithTag("Player").transform; 
+        enemy = enemyColor[Random.Range(0, enemyColor.Count)];
+        enemy.SetActive(true);
     }
     void Update()
     {
         // Move our position a step closer to the target.
         var step = speed * Time.deltaTime; // calculate distance to move
-        transform.position = Vector3.MoveTowards(transform.position,
-        target.position, step);
+        transform.position = Vector3.MoveTowards(transform.position, 
+            targetPlayer.position, step);
+        Vector3 targetPos  = targetPlayer.position;
+        targetPos.y = transform.position.y;
+        transform.LookAt(targetPos);   
         // Check if the position of the cube and sphere are approximately equal.
-        if (Vector3.Distance(transform.position, target.position) < 0.001f)
+        if (Vector3.Distance(transform.position, targetPlayer.position) < 0.001f)
         {
             // Swap the position of the cylinder.
-            target.position *= -1.0f;
+            targetPlayer.position *= -1.0f;
         }
-
-        Vector3 relativePos = target.position - transform.position;
-        // the second argument, upwards, defaults to Vector3.up
-        Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
-        transform.rotation = rotation;
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Red") && CompareTag("Red") || other.CompareTag("Green") && CompareTag("Green") || other.CompareTag("Blue") && CompareTag("Blue"))
+  
+        if (other.tag == enemy.tag)
         {
+            Destroy(other.gameObject);
             Destroy(gameObject);
+        }
+        else if (other.CompareTag("Player"))
+        {
+            return;
         }
         else
         {
             Destroy(other.gameObject);
         }
-
-
     }
     private void OnCollisionEnter(Collision other)
     {

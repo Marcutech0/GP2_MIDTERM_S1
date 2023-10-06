@@ -1,83 +1,99 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
-public class Player : MonoBehaviour
+public class PlayerScript : MonoBehaviour
 {
-    public Transform[] targets; // The array of targets
-    public float range = 11;
-    private float detectionRadius = 11;
+    public List<GameObject> playerColor;
+    public GameObject player;
+    public int playerColorCount = 0;
 
-    private Transform currentTarget; // The current target
-    private bool searchingForNewTarget = false; // Flag to control target search
+    public int vertexCount = 40;
+    public float lineWidth = 0.5f;
+    public float range;
+    public LineRenderer line;
 
-#if UNITY_EDITOR
-    private void OnDrawGizmos()
+    public List<GameObject> enemyList;
+    public GameObject enemyTarget;
+    public int enemyCount;
+    public Transform target;
+    public GameObject DeathScreen;
+
+    void Awake()
     {
-        Handles.color = Color.green;
-        Handles.DrawWireDisc(transform.position, Vector3.up, detectionRadius);
+        enemyCount = 0;
+
+        player = playerColor[playerColorCount++];
+
+        line = GetComponent<LineRenderer>();
     }
-#endif
+
+    private void Start()
+    {
+     
+    }
 
     void Update()
     {
-        // Check if the current target exists and is not destroyed within the circle
-        if (currentTarget == null || !currentTarget.gameObject.activeSelf || Vector3.Distance(currentTarget.position, transform.position) > detectionRadius)
+        if (Input.GetKeyDown("f"))
         {
-            // If not, initiate a search for a new closest target within the circle
-            if (!searchingForNewTarget)
-            {
-                StartCoroutine(SearchForNewTarget());
-            }
+            ChangePlayerColor();
         }
 
-        // If a valid current target exists, rotate the player to face it
-        if (currentTarget != null)
+        CreateCircle();
+    }
+
+    public void ChangePlayerColor()
+    {
+        player.SetActive(false);
+        player = playerColor[playerColorCount++];
+        if (playerColorCount == playerColor.Count)
         {
-            Vector3 relativePos = currentTarget.position - transform.position;
-            Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime); // Smoothly rotate to face the target
+            playerColorCount = 0;
+        }
+
+        player.SetActive(true);
+    }
+
+    private void CreateCircle()
+    {
+        line.widthMultiplier = lineWidth;
+
+        float deltaTheta = 2f * Mathf.PI / vertexCount;
+        float theta = 0f;
+
+        line.positionCount = vertexCount;
+        for (int i = 0; i < line.positionCount; i++)
+        {
+            Vector3 pos = new Vector3(range * Mathf.Cos(theta), 0f, range * Mathf.Sin(theta));
+            line.SetPosition(i, pos);
+            theta += deltaTheta;
         }
     }
 
-    private IEnumerator SearchForNewTarget()
+    private void AimAtEnemy()
     {
-        searchingForNewTarget = true;
-
-        while (currentTarget == null || !currentTarget.gameObject.activeSelf || Vector3.Distance(currentTarget.position, transform.position) > detectionRadius)
-        {
-            currentTarget = FindClosestTargetWithinCircle();
-            yield return new WaitForSeconds(1.0f); // Adjust the time interval as needed
-        }
-
-        searchingForNewTarget = false;
+        enemyTarget = enemyList[enemyCount];
+        Vector3 relativePos = enemyTarget.transform.position - transform.position;
+        Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
+        transform.rotation = rotation;
     }
 
-    private Transform FindClosestTargetWithinCircle()
+    private void OnTriggerEnter(Collider other)
     {
-        Transform closestTarget = null;
-        float closestDistance = float.MaxValue;
-
-        foreach (Transform target in targets)
+        if (other.CompareTag("Enemy"))
         {
-            float dist = Vector3.Distance(target.position, transform.position);
-            if (dist <= detectionRadius && dist <= range && dist < closestDistance)
-            {
-                closestDistance = dist;
-                closestTarget = target;
-            }
+            enemyList.Add(other.gameObject);
+            AimAtEnemy();
+            enemyCount++;
         }
-
-        return closestTarget;
     }
-
-    public void OnCurrentTargetDestroyed()
+    private void OnDestroy()
     {
-        // Called when the current target is destroyed, switch to the next closest target
-        currentTarget = FindClosestTargetWithinCircle();
+        DeathScreen.SetActive(true);
     }
 }

@@ -7,6 +7,10 @@ public class BlueEnemy : MonoBehaviour
     public float speed = 1f;
     private Transform target;
     public Material objectMaterial;
+    public List<GameObject> enemyColor;
+    public GameObject enemy;
+    public float enemySpeed;
+    public Transform targetPlayer;
     private void Awake()
     {
         // Position the cube at the origin.
@@ -20,6 +24,9 @@ public class BlueEnemy : MonoBehaviour
         // Create and position the floor.
         GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
         floor.transform.position = new Vector3(0.0f, -1.0f, 0.0f);
+
+        enemy = enemyColor[Random.Range(0, enemyColor.Count)];
+        enemy.SetActive(true);
     }
     void Update()
     {
@@ -44,6 +51,10 @@ public class BlueEnemy : MonoBehaviour
         if (other.CompareTag("Red") && CompareTag("Red") || other.CompareTag("Green") && CompareTag("Green") || other.CompareTag("Blue") && CompareTag("Blue"))
         {
             Destroy(gameObject);
+        }
+        else if (other.CompareTag("Player"))
+        {
+            return;
         }
         else
         {
