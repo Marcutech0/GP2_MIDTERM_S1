@@ -558,6 +558,7 @@ MonoBehaviour:
   BulletSpawnPoint: {fileID: 1102005324}
   BulletPrefab: {fileID: 5945705603876631439, guid: 2140c5037e8313e499abf3d0cac7671e, type: 3}
   BulletSpeed: 10
+  fireRate: 1
 --- !u!65 &595794928
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1090,7 +1091,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: YOU DIED
+  m_text: GAME OVER
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1364,6 +1365,7 @@ MonoBehaviour:
   BulletSpawnPoint: {fileID: 1809780864}
   BulletPrefab: {fileID: 8811147371717232031, guid: d93c1676521b046488f506457cc46566, type: 3}
   BulletSpeed: 10
+  fireRate: 1
 --- !u!65 &1299076707
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1849,6 +1851,7 @@ MonoBehaviour:
   BulletSpawnPoint: {fileID: 2019262842}
   BulletPrefab: {fileID: 7010321108794440330, guid: a011baa25e86f0f42b05ac506e3da7eb, type: 3}
   BulletSpeed: 10
+  fireRate: 1
 --- !u!65 &1804872424
 BoxCollider:
   m_ObjectHideFlags: 0

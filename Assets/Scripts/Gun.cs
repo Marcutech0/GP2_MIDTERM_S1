@@ -6,22 +6,33 @@ public class Gun : MonoBehaviour
 {
     public Transform BulletSpawnPoint;
     public GameObject BulletPrefab;
-    public float BulletSpeed = 10;
+    public float BulletSpeed;
+    public float fireRate;
+    private float baseFireRate;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        baseFireRate = fireRate;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space)) 
+        fireRate -= Time.deltaTime;
+
+        if(fireRate <=0) 
         {
-            var Bullet = Instantiate(BulletPrefab, BulletSpawnPoint.position, BulletSpawnPoint.rotation);
-            Bullet.GetComponent<Rigidbody>().velocity = BulletSpawnPoint.forward * BulletSpeed;
+            Shoot();
         }
 
+    }
+
+    void Shoot()
+    {
+        GameObject Bullet = Instantiate(BulletPrefab, BulletSpawnPoint.position, BulletSpawnPoint.rotation);
+        Rigidbody BulletRB = Bullet.GetComponent<Rigidbody>();
+        BulletRB.AddForce(BulletSpawnPoint.forward * BulletSpeed, ForceMode.Impulse);
+        fireRate = baseFireRate;
     }
 }
